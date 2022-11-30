@@ -63,7 +63,7 @@ async function run (){
         });
 
         //for showing bookings/orders based on users email
-        app.get('/bookings', async (req, res) => {
+        app.get('/bookings', verifyJWT, async (req, res) => {
             let query = {};
             if (req.query.email) {
                 query = {
@@ -73,7 +73,6 @@ async function run (){
             const bookings = await bookingsCollection.find(query).toArray();
             res.send(bookings);
         });
-
 
         //getting booking info
         app.get('/bookings', verifyJWT, async(req, res) => {
@@ -108,7 +107,7 @@ async function run (){
 
 
         //checking admin
-        app.get('/users/admin/:email', async(req, res) =>{
+        app.get('/users/admin/:email', verifyJWT, async(req, res) =>{
             const email = req.params.email;
             const query = {email};
             const user = await usersCollection.findOne(query);
@@ -186,7 +185,6 @@ async function run (){
             const query = {_id: ObjectId(id)};
             const result = await usersCollection.deleteOne(query);
             res.send(result);
-
         });
 
         //add product
@@ -201,6 +199,26 @@ async function run (){
             let query = { email: email };
             const products = await productCollection.find(query).toArray();
             res.send(products);
+        });
+        
+        //for showing my product based on users email
+        app.get('/dashboard/myproducts', verifyJWT, async (req, res) => {
+            let query = {};
+            if (req.query.email) {
+                query = {
+                    email: req.query.email
+                }
+            }
+            const myProducts = await productCollection.find(query).toArray();
+            res.send(myProducts);
+        });
+
+        //delete product
+        app.delete('/dashboard/myproduct/:id', verifyJWT, async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await productCollection.deleteOne(query);
+            res.send(result);
         });
 
     }
