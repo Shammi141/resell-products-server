@@ -62,6 +62,19 @@ async function run (){
             res.send(result);
         });
 
+        //for showing bookings/orders based on users email
+        app.get('/bookings', async (req, res) => {
+            let query = {};
+            if (req.query.email) {
+                query = {
+                    email: req.query.email
+                }
+            }
+            const bookings = await bookingsCollection.find(query).toArray();
+            res.send(bookings);
+        });
+
+
         //getting booking info
         app.get('/bookings', verifyJWT, async(req, res) => {
             const email = req.query.email;
@@ -138,9 +151,18 @@ async function run (){
             res.send(result);
 
         });
-        
+
+        //for getting all seller info
         app.get('/allsellers', verifyJWT, async (req, res) =>{  
             const query = { userType : 'seller'};
+            const result = await usersCollection.find(query).toArray();
+            res.send(result);
+
+        });
+
+        //for getting all buyer info
+        app.get('/allbuyers', verifyJWT, async (req, res) =>{  
+            const query = { userType : 'buyer'};
             const result = await usersCollection.find(query).toArray();
             res.send(result);
 
