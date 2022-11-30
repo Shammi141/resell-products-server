@@ -52,8 +52,27 @@ async function run (){
             const id = req.params.id;
             let query = {categoryId: id};
             const products = await productCollection.find(query).toArray();
-            res.send(products);
+
+            let allUsers = await usersCollection.find({}).toArray();
+           
+            
+                let newData = products.map(product => {
+                    allUsers.map(user => {
+                        if (user.email == product.email) {
+                            product["verified"] = user?.verified;
+                        }
+                    })
+                    return product;
+                })
+                console.log(newData)
+                res.send(newData);
+
+
+
+            // res.send(products);
         });
+
+        
 
         //posting bookings in db
         app.post('/bookings', async(req, res) =>{
